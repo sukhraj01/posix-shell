@@ -15,7 +15,16 @@ void printPermissions(mode_t mode) {
 }
 
 void printLongListing(const string &path, const struct stat &info) {
-    printPermissions(info.st_mode);
+    cout << ((S_ISDIR(info.st_mode)) ? 'd' : '-');
+    cout << ((info.st_mode & S_IRUSR) ? 'r' : '-');
+    cout << ((info.st_mode & S_IWUSR) ? 'w' : '-');
+    cout << ((info.st_mode & S_IXUSR) ? 'x' : '-');
+    cout << ((info.st_mode & S_IRGRP) ? 'r' : '-');
+    cout << ((info.st_mode & S_IWGRP) ? 'w' : '-');
+    cout << ((info.st_mode & S_IXGRP) ? 'x' : '-');
+    cout << ((info.st_mode & S_IROTH) ? 'r' : '-');
+    cout << ((info.st_mode & S_IWOTH) ? 'w' : '-');
+    cout << ((info.st_mode & S_IXOTH) ? 'x' : '-');
     cout << " " << info.st_nlink;
 
     struct passwd *pw = getpwuid(info.st_uid); // get user info
@@ -39,7 +48,6 @@ void listFile(const string &filePath, bool longList) {
         return;
     }
 
-    // Just file
     if (longList) {
         printLongListing(filePath, pathStat);
     } else {
@@ -84,11 +92,31 @@ void listDirectory(const string &dirPath, bool listAll, bool longList) {
 }
 
 void ls(const command &cmd) {
+    int original_stdout = dup(STDOUT_FILENO); // Save original stdout
+
+    if (!cmd.output_file.empty()) {
+        int fd_out;
+        if (cmd.append_output) {
+            fd_out = open(cmd.output_file.c_str(), O_WRONLY | O_CREAT | O_APPEND, 0644);
+        } else {
+            fd_out = open(cmd.output_file.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        }
+        
+        if (fd_out < 0) {
+            perror("Error opening output file");
+            close(original_stdout);
+            return;
+        }
+
+        dup2(fd_out, STDOUT_FILENO);
+        close(fd_out);
+    }
+    
+    // START OF ORIGINAL LS LOGIC
     bool listAll = false;
     bool longList = false;
     vector<string> targets;
 
-    // Parse args
     for (const auto &arg : cmd.args) {
         if (arg == "-a") listAll = true;
         else if (arg == "-l") longList = true;
@@ -100,7 +128,7 @@ void ls(const command &cmd) {
     }
 
     if (targets.empty()) {
-        targets.push_back("."); // default = current dir
+        targets.push_back(".");
     }
 
     for (size_t i = 0; i < targets.size(); i++) {
@@ -120,4 +148,10 @@ void ls(const command &cmd) {
             listFile(targets[i], longList);
         }
     }
+    // END OF ORIGINAL LS LOGIC
+
+    if (!cmd.output_file.empty()) {
+        dup2(original_stdout, STDOUT_FILENO);
+    }
+    close(original_stdout);
 }

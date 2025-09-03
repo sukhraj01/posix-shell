@@ -1,1 +1,18 @@
-hello
+cd
+cd ..
+cd ..
+cd ~
+clear
+pwd
+pwd
+clar\
+history
+history
+pwd
+clar\
+history
+history
+history 5
+Process Status -- S
+Memory -- 410068352 {Virtual Memory}
+Executable Path -- /bin/sleep
