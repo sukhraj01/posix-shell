@@ -71,7 +71,3 @@ void systemCmd(const command &cmd) {
     }
 }
 
-void ignoreSignals() {
-    signal(SIGINT, SIG_IGN);
-    signal(SIGTSTP, SIG_IGN);
-}

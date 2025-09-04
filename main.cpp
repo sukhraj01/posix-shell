@@ -5,8 +5,6 @@ using namespace std;
 int main() {
     initializeZombieCleaner();
     initShellHome();
-    initialize_readline();
-
     string cmdline;
 
     while (true) {

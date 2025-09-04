@@ -41,5 +41,4 @@
 #include "systemCmd.h"
 #include "pinfo.h"
 #include "pipeline.h"
-#include "signals.h"
 #include "autocomplete.h"

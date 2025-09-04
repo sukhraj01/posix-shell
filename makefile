@@ -1,7 +1,7 @@
 CXX = clang++
 CXXFLAGS = -std=c++17 -Wall -Wextra
 LDFLAGS = -lreadline
-TARGET = myshell
+TARGET = shell
 SRCS = $(wildcard *.cpp)
 
 $(TARGET): $(SRCS)

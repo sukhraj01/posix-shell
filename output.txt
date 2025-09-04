@@ -3,4 +3,22 @@
 6
 6
 6
-1
+1Process Status -- S+
+Memory -- 410237792 {Virtual Memory}
+Executable Path -- /Users/sukhrajsingh/Desktop/2025202009_Assignment2/myshell
+autocomplete.cpp
+builtins.cpp
+cd.cpp
+echo.cpp
+global.cpp
+history.cpp
+ls.cpp
+main.cpp
+parser.cpp
+pinfo.cpp
+pipeline.cpp
+pwd.cpp
+search.cpp
+shellinfo.cpp
+systemCmd.cpp
+zombie.cpp
