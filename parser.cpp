@@ -2,26 +2,49 @@
 
 using namespace std;
 
-cmdlist parser(const string& cmdLine) {
-    cmdlist list;
+// Forward declarations to maintain structure
+void cmdParser(const string& singleCmd, command& cmd);
+void print_info(const vector<cmdlist> &pipelines);
 
-    char *line = strdup(cmdLine.c_str());
-    char *saveptr1;
-    char *token = strtok_r(line, ";", &saveptr1);
+// The main parser function is now updated to handle both ';' and '|'
+// It returns a vector of cmdlist, where each cmdlist represents a single pipeline.
+vector<cmdlist> parser(const string& cmdLine) {
+    vector<cmdlist> all_pipelines;
 
-    while (token) {
-        string singleCmd(token);
-        command cmd;
-        cmdParser(singleCmd, cmd);
+    char *semicolon_token = strdup(cmdLine.c_str());
+    char *semicolon_saveptr;
+    char *semicolon_cmd = strtok_r(semicolon_token, ";", &semicolon_saveptr);
 
-        if (!cmd.name.empty()) {
-            list.commands.push_back(cmd);
+    while (semicolon_cmd) {
+        cmdlist current_pipeline;
+        
+        char *pipe_token = strdup(semicolon_cmd);
+        char *pipe_saveptr;
+        char *pipe_cmd = strtok_r(pipe_token, "|", &pipe_saveptr);
+        
+        while (pipe_cmd) {
+            string single_cmd_str(pipe_cmd);
+            command cmd;
+            cmdParser(single_cmd_str, cmd);
+            
+            if (!cmd.name.empty()) {
+                current_pipeline.commands.push_back(cmd);
+            }
+            
+            pipe_cmd = strtok_r(NULL, "|", &pipe_saveptr);
         }
-        token = strtok_r(nullptr, ";", &saveptr1);
+        
+        free(pipe_token);
+        
+        if (!current_pipeline.commands.empty()) {
+            all_pipelines.push_back(current_pipeline);
+        }
+        
+        semicolon_cmd = strtok_r(NULL, ";", &semicolon_saveptr);
     }
-
-    free(line);
-    return list;
+    
+    free(semicolon_token);
+    return all_pipelines;
 }
 
 void cmdParser(const string& singleCmd, command& cmd) {
@@ -83,16 +106,19 @@ void cmdParser(const string& singleCmd, command& cmd) {
 
 
 // Print parseInfo (for debugging)
-void print_info(const cmdlist &info) {
-    for (const auto &comm : info.commands) {
-        cout << "Command: " << comm.name << "\n";
-        cout << "Args: ";
-        for (const auto &arg : comm.args) {
-            cout << arg << " ";
+void print_info(const vector<cmdlist> &pipelines) {
+    for (size_t i = 0; i < pipelines.size(); ++i) {
+        cout << "--- Pipeline " << i + 1 << " ---\n";
+        for (const auto &comm : pipelines[i].commands) {
+            cout << "  Command: " << comm.name << "\n";
+            cout << "  Args: ";
+            for (const auto &arg : comm.args) {
+                cout << arg << " ";
+            }
+            cout << "\n  Input File: " << comm.input_file << "\n";
+            cout << "  Output File: " << comm.output_file << "\n";
+            cout << "  Append: " << (comm.append_output ? "Yes" : "No") << "\n";
+            cout << "  Background: " << (comm.background ? "Yes" : "No") << "\n\n";
         }
-        cout << "\nInput File: " << comm.input_file << "\n";
-        cout << "Output File: " << comm.output_file << "\n";
-        cout << "Append: " << (comm.append_output ? "Yes" : "No") << "\n";
-        cout << "Background: " << (comm.background ? "Yes" : "No") << "\n\n";
     }
 }

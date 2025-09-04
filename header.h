@@ -19,6 +19,7 @@
 #include <cerrno>
 #include <cstring>
 #include <signal.h>
+#include <csignal>
 #include <libproc.h>
 #include <sys/proc_info.h>
 #include <termios.h>
@@ -37,3 +38,4 @@
 #include "zombie.h"
 #include "systemCmd.h"
 #include "pinfo.h"
+#include "pipeline.h"

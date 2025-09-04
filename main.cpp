@@ -6,42 +6,83 @@ using namespace std;
 
 int main() {
     initializeZombieCleaner();
+    ignoreSignals();
     initShellHome();
     string cmdline;
 
     while (true) {
 
-        // Use readline instead of getline for better input handling
-        char* input = readline(shellInfo().c_str()); // shows shell info and waits for user
-        if (input == nullptr) break;   // EOF (Ctrl+D)
+        char* input = readline(shellInfo().c_str());
+        if (input == nullptr) break;
         cmdline = string(input);
         if (!cmdline.empty()) add_history(cmdline.c_str());
-        free(input);                   // readline allocates memory, free it
+        free(input);
 
         if (cmdline.empty()) continue;
         if (cmdline == "exit") break;
 
+        // The parser now returns a vector of pipelines
+        vector<cmdlist> pipelines = parser(cmdline);
 
-        // Add command to history (from readline)
-        // addToHistory(cmdline);          // <-- NEW: preserves your cmdline for other uses
-
-        // Use parser
-        cmdlist clist = parser(cmdline); // List of all commands with their args
-    
-        
-        for (struct command cmd: clist.commands) {
-            recordHistory(cmd);
-            if (isBuiltIn(cmd)) {
-                executeBuiltIn(cmd);
+        for (auto& clist : pipelines) {
+            // Check if it's a single command or a pipeline
+            if (clist.commands.size() > 1) {
+                executePipeline(clist);
+                // cout << "Pipeline detected.\n"; 
             } else {
-                systemCmd(cmd);
+                // It's a single command, use the existing logic
+                struct command& cmd = clist.commands[0];
+                recordHistory(cmd);
+                if (isBuiltIn(cmd)) {
+                    executeBuiltIn(cmd);
+                } else {
+                    systemCmd(cmd);
+                }
             }
         }
-        // print_info(clist);    
     }
 
     return 0;
 }
+
+// int main() {
+//     initializeZombieCleaner();
+//     initShellHome();
+//     string cmdline;
+
+//     while (true) {
+
+//         // Use readline instead of getline for better input handling
+//         char* input = readline(shellInfo().c_str()); // shows shell info and waits for user
+//         if (input == nullptr) break;   // EOF (Ctrl+D)
+//         cmdline = string(input);
+//         if (!cmdline.empty()) add_history(cmdline.c_str());
+//         free(input);                   // readline allocates memory, free it
+
+//         if (cmdline.empty()) continue;
+//         if (cmdline == "exit") break;
+
+
+//         // Add command to history (from readline)
+//         // addToHistory(cmdline);          // <-- NEW: preserves your cmdline for other uses
+
+//         // Use parser
+//         cmdlist clist = parser(cmdline); // List of all commands with their args
+    
+        
+//         for (struct command cmd: clist.commands) {
+//             recordHistory(cmd);
+//             if (isBuiltIn(cmd)) {
+//                 executeBuiltIn(cmd);
+//             } else {
+//                 systemCmd(cmd);
+//             }
+//         }
+//         // print_info(clist);    
+//     }
+
+//     return 0;
+// }
 
 
 

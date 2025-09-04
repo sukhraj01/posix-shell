@@ -22,9 +22,12 @@ void loadHistory() {
         while (len && (buffer[len - 1] == '\n' || buffer[len - 1] == '\r')) buffer[--len] = '\0';
         if (len == 0) continue;
 
-        auto parsed = parser(string(buffer));
-        if (!parsed.commands.empty()) {
-            g_hist.push_back(parsed.commands[0]);
+        // The parser now returns a vector of pipelines, so we must access it differently
+        auto parsed_pipelines = parser(string(buffer));
+        
+        // Ensure the parser returned at least one command in the first pipeline
+        if (!parsed_pipelines.empty() && !parsed_pipelines[0].commands.empty()) {
+            g_hist.push_back(parsed_pipelines[0].commands[0]);
             if (g_hist.size() > HISTORY_LIMIT)
                 g_hist.erase(g_hist.begin());
         }
@@ -126,37 +129,3 @@ void history(const command &cmd) {
     close(original_stdout);
     // END RESTORATION LOGIC
 }
-// Built-in: history [N]
-// void history(const command &cmd) {
-//     int toShow = 10; // default number of commands
-
-//     // validate arguments
-//     if (cmd.args.size() > 1) {
-//         fprintf(stderr, "history: invalid arguments\n");
-//         return;
-//     }
-//     if (!cmd.args.empty()) {
-//         string arg = cmd.args[0];
-//         for (char c : arg) {
-//             if (!isdigit(c)) {
-//                 fprintf(stderr, "history: invalid number: %s\n", arg.c_str());
-//                 return;
-//             }
-//         }
-//         toShow = stoi(arg);
-//         if (toShow < 0) toShow = 0;
-//         if (toShow > HISTORY_LIMIT) toShow = HISTORY_LIMIT;
-//     }
-
-//     // calculate start index to show last `toShow` commands
-//     int n = g_hist.size();
-//     int start = n - toShow;
-//     if (start < 0) start = 0;
-
-//     // print last `toShow` commands from g_hist
-//     for (int i = start; i < n; ++i) {
-//         string line = g_hist[i].name;
-//         for (const string &arg : g_hist[i].args) line += " " + arg;
-//         printf("%s\n", line.c_str());
-//     }
-// }

@@ -5,5 +5,5 @@
 using namespace std;
 
 void cmdParser(const string& singleCmd, command& cmd);
-cmdlist parser(const string& cmdLine);
+vector<cmdlist> parser(const string& cmdLine);
 void print_info(const cmdlist &info);

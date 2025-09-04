@@ -1,18 +1,14 @@
-cd
-cd ..
-cd ..
-cd ~
-clear
-pwd
-pwd
-clar\
-history
-history
-pwd
-clar\
-history
-history
-history 5
-Process Status -- S
-Memory -- 410068352 {Virtual Memory}
-Executable Path -- /bin/sleep
+builtins.cpp
+cd.cpp
+echo.cpp
+history.cpp
+ls.cpp
+main.cpp
+parser.cpp
+pinfo.cpp
+pipeline.cpp
+pwd.cpp
+search.cpp
+shellinfo.cpp
+systemCmd.cpp
+zombie.cpp
