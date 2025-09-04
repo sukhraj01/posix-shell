@@ -23,6 +23,8 @@
 #include <libproc.h>
 #include <sys/proc_info.h>
 #include <termios.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
 // Custom headers
 #include "struct.h"
@@ -39,3 +41,5 @@
 #include "systemCmd.h"
 #include "pinfo.h"
 #include "pipeline.h"
+#include "signals.h"
+#include "autocomplete.h"

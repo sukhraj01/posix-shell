@@ -1,13 +1,12 @@
 #include "header.h"
-#include <readline/readline.h>
-#include <readline/history.h>
 
 using namespace std;
 
 int main() {
     initializeZombieCleaner();
-    ignoreSignals();
     initShellHome();
+    initialize_readline();
+
     string cmdline;
 
     while (true) {

@@ -122,7 +122,14 @@ void ls(const command &cmd) {
         else if (arg == "-l") longList = true;
         else if (arg == "-la" || arg == "-al") listAll = longList = true;
         else if (!arg.empty() && arg[0] == '~') {
-            targets.push_back(root + arg.substr(1));  
+            const char* home = getenv("HOME");
+            if (home == NULL) {
+            cerr << "ls: HOME not set\n";
+            continue;
+        }
+        // Replace ~ with actual home directory
+        string expanded = string(home) + arg.substr(1);
+        targets.push_back(expanded);
         }
         else targets.push_back(arg);
     }

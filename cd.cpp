@@ -13,7 +13,7 @@ void cd(const command& cmd) {
         currDir = cwd;
     }
     string destDir;
-    if (cmd.args.size() == 0 || cmd.args[0] == "~") {
+    if (cmd.args.size() == 0) {
         destDir = root;
     } else if (cmd.args[0] == ".") { // current directory
         return; 
@@ -25,7 +25,15 @@ void cd(const command& cmd) {
         return;
         }
         destDir = prevDir;   // go to previous directory
-    } else {
+    } else if (cmd.args[0] == "~") {
+        const char* home = getenv("HOME");       // get user's home dir
+        if (home == NULL) {
+            cerr << "cd: HOME not set\n";
+            return;
+        }
+        destDir = home;
+    } 
+    else {
         destDir = cmd.args[0];    // specific path
     }
 
